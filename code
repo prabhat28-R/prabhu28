@@ -1,0 +1,32 @@
+import requests
+import time
+import pandas as pd
+from datetime import datetime
+import shutil
+from oauth2client.service_account import ServiceAccountCredentials
+TOTAL_TARDING_MINUTES=375
+INTERVAL=1                #<<<<====================CHANE ACCORDINGLY[1/3/5/10/15...............]
+REPEAT_CODE=TOTAL_TARDING_MINUTES/INTERVAL
+EXPDATE='29-04-2021'
+def DATA_EXTRACT():
+    COL=["STK","EXP","NIFTY","SYMBOL","OI","CHNGOI","OICHNGPER","TTV","IV","LTP","CHNG","PCHNG","TBQ","TSQ","BQ","BP","AQ","AP","SPOT"]
+    url = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY'
+    headers={'user-agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36',
+         'accept-language':'en-US,en;q=0.9,bn;q=0.8','accept-encoding':'gzip, deflate, br'}
+    r=requests.get(url,headers=headers).json()
+    data=r["data"]
+      
+    df=pd.DataFrame(data)
+    ndf=df.dropna()
+    rows=len(ndf)
+     
+    for i in range(0,rows):
+        STKCE=ndf["CE"].iloc[i]
+        STKCE=eval(STKCE)
+        STKPE=ndf["PE"].iloc[i]
+        STKPE=eval(STKPE)
+        CEDF=pd.DataFrame(STKCE,index=[0])
+        PEDF=pd.DataFrame(STKPE,index=[0])
+        frames = [CEDF, PEDF]
+        result = pd.concat(frames)
+    Print(result)
